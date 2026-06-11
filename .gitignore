@@ -8,6 +8,7 @@ obj/
 
 # User secrets
 **/appsettings.Development.json
+**/appsettings.json
 
 # Node / Angular
 node_modules/
