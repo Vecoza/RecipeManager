@@ -1,0 +1,33 @@
+# .NET
+bin/
+obj/
+*.user
+*.suo
+.vs/
+*.swp
+
+# User secrets
+**/appsettings.Development.json
+
+# Node / Angular
+node_modules/
+dist/
+.angular/
+.cache/
+
+# Environment
+.env
+*.env.local
+
+# .NET test/publish
+TestResults/
+publish/
+*.log
+
+# NuGet
+*.nupkg
+packages/
+
+# OS
+.DS_Store
+Thumbs.db
