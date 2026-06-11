@@ -1,31 +1,18 @@
-using Microsoft.EntityFrameworkCore;
+using RecipeManager.API.Extensions;
 using RecipeManager.API.Middleware;
-using RecipeManager.Infrastructure.Data;
-using RecipeManager.Infrastructure.Entities;
-using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ─── Database ────────────────────────────────────────────────────────────────
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services
+    .AddDatabase(builder.Configuration)
+    .AddIdentityServices()
+    .AddJwtAuthentication(builder.Configuration)
+    .AddApplicationServices();
 
-// ─── Identity ────────────────────────────────────────────────────────────────
-builder.Services.AddIdentityCore<AppUser>(options =>
-{
-    options.Password.RequireNonAlphanumeric = false;
-    options.Password.RequiredLength = 6;
-    options.User.RequireUniqueEmail = true;
-})
-.AddEntityFrameworkStores<AppDbContext>()
-.AddDefaultTokenProviders();
-
-// ─── Services ────────────────────────────────────────────────────────────────
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// CORS — allow Angular dev server
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngular", policy =>
@@ -36,7 +23,6 @@ builder.Services.AddCors(options =>
     });
 });
 
-// ─── Pipeline ────────────────────────────────────────────────────────────────
 var app = builder.Build();
 
 app.UseMiddleware<ExceptionMiddleware>();

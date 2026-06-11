@@ -1,10 +1,5 @@
 namespace RecipeManager.Infrastructure.Entities;
 
-/// <summary>
-/// Recipe — the core aggregate of the application.
-/// Owned by one AppUser. Has one-to-many Ingredients and Steps,
-/// and many-to-many Tags (via RecipeTags join table).
-/// </summary>
 public class Recipe : BaseEntity
 {
     public string UserId { get; set; } = string.Empty;

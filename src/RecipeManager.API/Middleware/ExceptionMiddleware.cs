@@ -25,14 +25,22 @@ public class ExceptionMiddleware
         {
             await _next(context);
         }
+        catch (UnauthorizedAccessException ex)
+        {
+            _logger.LogWarning(ex, "Unauthorized access: {Message}", ex.Message);
+            context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+            context.Response.ContentType = "application/json";
+            await context.Response.WriteAsync(
+                JsonSerializer.Serialize(new { message = ex.Message }));
+        }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Unhandled exception: {Message}", ex.Message);
-            await HandleExceptionAsync(context, ex);
+            await HandleServerErrorAsync(context, ex);
         }
     }
 
-    private Task HandleExceptionAsync(HttpContext context, Exception ex)
+    private Task HandleServerErrorAsync(HttpContext context, Exception ex)
     {
         context.Response.ContentType = "application/json";
         context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;

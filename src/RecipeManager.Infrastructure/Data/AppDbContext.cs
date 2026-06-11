@@ -4,10 +4,6 @@ using RecipeManager.Infrastructure.Entities;
 
 namespace RecipeManager.Infrastructure.Data;
 
-/// <summary>
-/// Main EF Core database context.
-/// Inherits from IdentityDbContext to include all ASP.NET Identity tables.
-/// </summary>
 public class AppDbContext : IdentityDbContext<AppUser>
 {
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
@@ -19,9 +15,8 @@ public class AppDbContext : IdentityDbContext<AppUser>
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
-        base.OnModelCreating(builder); // Required — configures Identity tables
+        base.OnModelCreating(builder);
 
-        // ── Recipe ───────────────────────────────────────────────────────────
         builder.Entity<Recipe>(entity =>
         {
             entity.HasKey(r => r.Id);
@@ -33,31 +28,26 @@ public class AppDbContext : IdentityDbContext<AppUser>
             entity.Property(r => r.Servings)
                   .HasDefaultValue(4);
 
-            // Recipe → AppUser (many-to-one)
             entity.HasOne(r => r.User)
                   .WithMany(u => u.Recipes)
                   .HasForeignKey(r => r.UserId)
                   .OnDelete(DeleteBehavior.Cascade);
 
-            // Recipe → Ingredients (one-to-many, cascade delete)
             entity.HasMany(r => r.Ingredients)
                   .WithOne(i => i.Recipe)
                   .HasForeignKey(i => i.RecipeId)
                   .OnDelete(DeleteBehavior.Cascade);
 
-            // Recipe → Steps (one-to-many, cascade delete)
             entity.HasMany(r => r.Steps)
                   .WithOne(s => s.Recipe)
                   .HasForeignKey(s => s.RecipeId)
                   .OnDelete(DeleteBehavior.Cascade);
 
-            // Recipe ↔ Tags (many-to-many — EF creates RecipeTags join table)
             entity.HasMany(r => r.Tags)
                   .WithMany(t => t.Recipes)
                   .UsingEntity(j => j.ToTable("RecipeTags"));
         });
 
-        // ── Ingredient ───────────────────────────────────────────────────────
         builder.Entity<Ingredient>(entity =>
         {
             entity.HasKey(i => i.Id);
@@ -73,7 +63,6 @@ public class AppDbContext : IdentityDbContext<AppUser>
                   .HasMaxLength(50);
         });
 
-        // ── Step ─────────────────────────────────────────────────────────────
         builder.Entity<Step>(entity =>
         {
             entity.HasKey(s => s.Id);
@@ -82,7 +71,6 @@ public class AppDbContext : IdentityDbContext<AppUser>
                   .IsRequired();
         });
 
-        // ── Tag ──────────────────────────────────────────────────────────────
         builder.Entity<Tag>(entity =>
         {
             entity.HasKey(t => t.Id);
@@ -95,7 +83,6 @@ public class AppDbContext : IdentityDbContext<AppUser>
                   .IsUnique();
         });
 
-        // ── Seed default tags ─────────────────────────────────────────────────
         SeedTags(builder);
     }
 
