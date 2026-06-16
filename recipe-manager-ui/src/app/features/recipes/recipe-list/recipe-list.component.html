@@ -4,6 +4,15 @@
       <span class="brand-name">Recipes</span>
     </div>
 
+    <div class="sidebar-nav">
+      <a class="nav-item" routerLink="/recipes" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+        All Recipes
+      </a>
+      <a class="nav-item" routerLink="/pantry" routerLinkActive="active">
+        My Pantry
+      </a>
+    </div>
+
     <div class="sidebar-section">
       <p class="sidebar-label">Filter by tag</p>
       <div class="tag-list">
@@ -16,7 +25,9 @@
     </div>
 
     <div class="sidebar-bottom">
-      <span class="user-email">{{ auth.currentEmail() }}</span>
+      <div class="user-pill">
+        <span class="user-email">{{ auth.currentEmail() }}</span>
+      </div>
       <button class="logout-btn" (click)="auth.logout()">
         <mat-icon>logout</mat-icon>
         Sign out
@@ -25,8 +36,6 @@
   </nav>
 
   <main class="content">
-    <h1 class="page-title">My Recipes</h1>
-
     <div class="topbar">
       <div class="search-box">
         <mat-icon>search</mat-icon>
@@ -37,7 +46,10 @@
           (ngModelChange)="onSearch($event)"
         />
       </div>
-      <a class="new-btn" routerLink="/recipes/new">New Recipe</a>
+      <a class="new-btn" routerLink="/recipes/new">
+        <mat-icon>add</mat-icon>
+        New Recipe
+      </a>
     </div>
 
     @if (selectedTags().length > 0) {
@@ -57,7 +69,10 @@
       <div class="empty-state">
         <h3>No recipes yet</h3>
         <p>Start building your collection</p>
-        <a class="new-btn" routerLink="/recipes/new">Add your first recipe</a>
+        <a class="new-btn" routerLink="/recipes/new">
+          <mat-icon>add</mat-icon>
+          Add your first recipe
+        </a>
       </div>
     } @else {
       <div class="recipe-grid">

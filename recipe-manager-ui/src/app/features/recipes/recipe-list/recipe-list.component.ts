@@ -1,5 +1,5 @@
 import { Component, OnInit, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { RouterLink, RouterLinkActive } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -14,7 +14,7 @@ import { RecipeCardComponent } from '../../../shared/components/recipe-card/reci
 @Component({
   selector: 'app-recipe-list',
   standalone: true,
-  imports: [RouterLink, FormsModule, MatIconModule, MatButtonModule, MatProgressSpinnerModule, RecipeCardComponent],
+  imports: [RouterLink, RouterLinkActive, FormsModule, MatIconModule, MatButtonModule, MatProgressSpinnerModule, RecipeCardComponent],
   templateUrl: './recipe-list.component.html',
   styleUrl: './recipe-list.component.scss'
 })

@@ -1,0 +1,288 @@
+<div class="layout">
+
+  <nav class="sidebar">
+    <div class="sidebar-brand">
+      <span class="brand-name">Recipes</span>
+    </div>
+
+    <div class="sidebar-nav">
+      <a class="nav-item" routerLink="/recipes" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+        All Recipes
+      </a>
+      <a class="nav-item" routerLink="/pantry" routerLinkActive="active">
+        My Pantry
+      </a>
+    </div>
+
+    <div class="sidebar-spacer"></div>
+
+    <div class="sidebar-bottom">
+      <span class="user-email">{{ auth.currentEmail() }}</span>
+      <button class="logout-btn" (click)="auth.logout()">
+        <mat-icon>logout</mat-icon>
+        Sign out
+      </button>
+    </div>
+  </nav>
+
+  <main class="content">
+    <div class="page-header">
+      <h1>My Pantry</h1>
+      <p>Add what you have, find what you can make.</p>
+    </div>
+
+    <!-- Section 1: Ingredients -->
+    <section class="panel">
+      <div class="panel-header">
+        <h2>My Ingredients</h2>
+        @if (pantryItems().length > 0) {
+          <span class="count-badge">{{ pantryItems().length }}</span>
+        }
+      </div>
+
+      <form class="add-form" [formGroup]="addForm" (ngSubmit)="addItem()">
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="field-name">
+            <mat-label>Ingredient</mat-label>
+            <input matInput formControlName="name" placeholder="e.g. Chicken breast" />
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="field-qty">
+            <mat-label>Qty</mat-label>
+            <input matInput formControlName="quantity" type="number" min="0" />
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="field-unit">
+            <mat-label>Unit</mat-label>
+            <mat-select formControlName="unit">
+              <mat-option value="">—</mat-option>
+              @for (u of units; track u) {
+                <mat-option [value]="u">{{ u }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+          <button type="submit" class="add-btn" [disabled]="addForm.invalid">Add</button>
+        </div>
+      </form>
+
+      @if (loadingItems()) {
+        <div class="spinner-wrap"><mat-spinner diameter="32" /></div>
+      } @else if (pantryItems().length === 0) {
+        <div class="empty-hint">No ingredients yet. Add some above.</div>
+      } @else {
+        <ul class="item-list">
+          @for (item of pantryItems(); track item.id) {
+            <li class="item-row">
+              @if (editingId() === item.id) {
+                <form class="edit-inline" [formGroup]="editForm" (ngSubmit)="saveEdit(item.id)">
+                  <div class="form-row">
+                    <mat-form-field appearance="outline" class="field-name">
+                      <mat-label>Name</mat-label>
+                      <input matInput formControlName="name" />
+                    </mat-form-field>
+                    <mat-form-field appearance="outline" class="field-qty">
+                      <mat-label>Qty</mat-label>
+                      <input matInput formControlName="quantity" type="number" />
+                    </mat-form-field>
+                    <mat-form-field appearance="outline" class="field-unit">
+                      <mat-label>Unit</mat-label>
+                      <mat-select formControlName="unit">
+                        <mat-option value="">—</mat-option>
+                        @for (u of units; track u) {
+                          <mat-option [value]="u">{{ u }}</mat-option>
+                        }
+                      </mat-select>
+                    </mat-form-field>
+                    <button type="submit" class="save-btn" [disabled]="editForm.invalid">Save</button>
+                    <button type="button" class="cancel-btn" (click)="cancelEdit()">Cancel</button>
+                  </div>
+                </form>
+              } @else {
+                <span class="item-name">{{ item.name }}</span>
+                <span class="item-qty">{{ item.quantity }} {{ item.unit }}</span>
+                <div class="item-actions">
+                  <button class="icon-btn" (click)="startEdit(item)"><mat-icon>edit</mat-icon></button>
+                  <button class="icon-btn danger" (click)="deleteItem(item.id)"><mat-icon>delete_outline</mat-icon></button>
+                </div>
+              }
+            </li>
+          }
+        </ul>
+      }
+
+      @if (hasItems) {
+        <div class="panel-cta">
+          <button class="cta-btn filled" (click)="findMatches()" [disabled]="loadingMatches()">
+            {{ loadingMatches() ? 'Searching…' : 'Find Matching Recipes' }}
+          </button>
+          @if (!showPreferences() && !loadingGenerate()) {
+            <button class="cta-btn outlined" (click)="openPreferences()">Generate with AI</button>
+          }
+          @if (loadingGenerate()) {
+            <button class="cta-btn outlined" disabled>Generating…</button>
+          }
+        </div>
+      }
+    </section>
+
+    <!-- Preference panel -->
+    @if (showPreferences()) {
+      <section class="panel pref-panel">
+        <h2>Customize your recipe</h2>
+
+        <div class="pref-group">
+          <p class="pref-label">Recipe type</p>
+          <div class="seg-row">
+            <button class="seg-btn" [class.selected]="preferences().recipeType === 'Savoury'" (click)="setPreference('recipeType', 'Savoury')">Savoury</button>
+            <button class="seg-btn" [class.selected]="preferences().recipeType === 'Sweet'" (click)="setPreference('recipeType', 'Sweet')">Sweet</button>
+            <button class="seg-btn" [class.selected]="preferences().recipeType === 'Either'" (click)="setPreference('recipeType', 'Either')">Either</button>
+          </div>
+        </div>
+
+        <div class="pref-group">
+          <p class="pref-label">Meal type</p>
+          <div class="seg-row">
+            <button class="seg-btn" [class.selected]="preferences().mealType === 'Breakfast'" (click)="setPreference('mealType', 'Breakfast')">Breakfast</button>
+            <button class="seg-btn" [class.selected]="preferences().mealType === 'Lunch'" (click)="setPreference('mealType', 'Lunch')">Lunch</button>
+            <button class="seg-btn" [class.selected]="preferences().mealType === 'Dinner'" (click)="setPreference('mealType', 'Dinner')">Dinner</button>
+            <button class="seg-btn" [class.selected]="preferences().mealType === 'Snack'" (click)="setPreference('mealType', 'Snack')">Snack</button>
+          </div>
+        </div>
+
+        <div class="pref-group">
+          <p class="pref-label">Cooking time</p>
+          <div class="seg-row">
+            <button class="seg-btn" [class.selected]="preferences().cookingTime === 'Quick'" (click)="setPreference('cookingTime', 'Quick')">Quick · under 20 min</button>
+            <button class="seg-btn" [class.selected]="preferences().cookingTime === 'Medium'" (click)="setPreference('cookingTime', 'Medium')">Medium · 20–45 min</button>
+            <button class="seg-btn" [class.selected]="preferences().cookingTime === 'Any'" (click)="setPreference('cookingTime', 'Any')">Any</button>
+          </div>
+        </div>
+
+        <div class="pref-actions">
+          <button class="cta-btn filled" (click)="confirmGenerate()">Generate Recipe</button>
+          <button class="pref-cancel" (click)="cancelPreferences()">Cancel</button>
+        </div>
+      </section>
+    }
+
+    <!-- Section 2: Recipe Matches -->
+    @if (loadingMatches()) {
+      <section class="panel loading-panel">
+        <mat-spinner diameter="32" />
+        <p>Finding matching recipes…</p>
+      </section>
+    } @else if (matchResult(); as result) {
+      <section class="panel">
+        <h2>Recipe Matches</h2>
+        <div class="matches-grid">
+          <div class="match-col">
+            <div class="match-col-header">
+              <span class="col-label green">Exact Matches</span>
+              @if (result.exactMatches.length > 0) {
+                <span class="col-count green">{{ result.exactMatches.length }}</span>
+              }
+            </div>
+            @if (result.exactMatches.length === 0) {
+              <p class="none-found">None found</p>
+            } @else {
+              @for (match of result.exactMatches; track match.recipe.id) {
+                <a class="match-card" [routerLink]="['/recipes', match.recipe.id]">
+                  <span class="match-pct green">100%</span>
+                  <h4 class="match-title">{{ match.recipe.title }}</h4>
+                  <span class="match-meta">{{ match.recipe.prepTimeMinutes + match.recipe.cookTimeMinutes }}m · {{ match.recipe.servings }} servings</span>
+                </a>
+              }
+            }
+          </div>
+
+          <div class="match-divider"></div>
+
+          <div class="match-col">
+            <div class="match-col-header">
+              <span class="col-label amber">Partial Matches</span>
+              @if (result.partialMatches.length > 0) {
+                <span class="col-count amber">{{ result.partialMatches.length }}</span>
+              }
+            </div>
+            @if (result.partialMatches.length === 0) {
+              <p class="none-found">None found</p>
+            } @else {
+              @for (match of result.partialMatches; track match.recipe.id) {
+                <a class="match-card" [routerLink]="['/recipes', match.recipe.id]">
+                  <span class="match-pct amber">{{ match.matchPercent }}%</span>
+                  <h4 class="match-title">{{ match.recipe.title }}</h4>
+                  <span class="match-meta">{{ match.matchedCount }}/{{ match.totalCount }} ingredients · {{ match.recipe.prepTimeMinutes + match.recipe.cookTimeMinutes }}m</span>
+                </a>
+              }
+            }
+          </div>
+        </div>
+      </section>
+    }
+
+    <!-- Section 3: AI Generated Recipe -->
+    @if (generateError()) {
+      <div class="error-banner">{{ generateError() }}</div>
+    }
+
+    @if (loadingGenerate()) {
+      <section class="panel loading-panel">
+        <mat-spinner diameter="32" />
+        <p>Generating recipe with AI…</p>
+      </section>
+    }
+
+    @if (generatedRecipe(); as recipe) {
+      <section class="panel generated-panel">
+        <span class="ai-badge">AI Generated</span>
+        <h2 class="generated-title">{{ recipe.title }}</h2>
+        @if (recipe.description) {
+          <p class="generated-desc">{{ recipe.description }}</p>
+        }
+
+        <div class="stats-row">
+          <div class="stat-item">
+            <span class="stat-val">{{ recipe.prepTimeMinutes }}m</span>
+            <span class="stat-label">Prep</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-val">{{ recipe.cookTimeMinutes }}m</span>
+            <span class="stat-label">Cook</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-val">{{ recipe.servings }}</span>
+            <span class="stat-label">Servings</span>
+          </div>
+        </div>
+
+        <div class="generated-section">
+          <h3>Ingredients</h3>
+          <ul class="generated-list">
+            @for (ing of recipe.ingredients; track $index) {
+              <li>{{ ing.quantity }} {{ ing.unit }} {{ ing.name }}</li>
+            }
+          </ul>
+        </div>
+
+        <div class="generated-section">
+          <h3>Steps</h3>
+          <ol class="generated-steps">
+            @for (step of recipe.steps; track $index) {
+              <li>{{ step.instruction }}</li>
+            }
+          </ol>
+        </div>
+
+        @if (savedSuccess()) {
+          <div class="success-banner">
+            Recipe saved to your collection!
+            <a routerLink="/recipes">View in My Recipes →</a>
+          </div>
+        } @else {
+          <button class="save-full-btn" (click)="saveGeneratedRecipe()" [disabled]="savingRecipe()">
+            {{ savingRecipe() ? 'Saving…' : 'Save to my recipes' }}
+          </button>
+        }
+      </section>
+    }
+
+  </main>
+</div>

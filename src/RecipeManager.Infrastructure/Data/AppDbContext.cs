@@ -12,6 +12,7 @@ public class AppDbContext : IdentityDbContext<AppUser>
     public DbSet<Ingredient> Ingredients => Set<Ingredient>();
     public DbSet<Step> Steps => Set<Step>();
     public DbSet<Tag> Tags => Set<Tag>();
+    public DbSet<PantryItem> PantryItems => Set<PantryItem>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -20,13 +21,8 @@ public class AppDbContext : IdentityDbContext<AppUser>
         builder.Entity<Recipe>(entity =>
         {
             entity.HasKey(r => r.Id);
-
-            entity.Property(r => r.Title)
-                  .IsRequired()
-                  .HasMaxLength(200);
-
-            entity.Property(r => r.Servings)
-                  .HasDefaultValue(4);
+            entity.Property(r => r.Title).IsRequired().HasMaxLength(200);
+            entity.Property(r => r.Servings).HasDefaultValue(4);
 
             entity.HasOne(r => r.User)
                   .WithMany(u => u.Recipes)
@@ -51,36 +47,35 @@ public class AppDbContext : IdentityDbContext<AppUser>
         builder.Entity<Ingredient>(entity =>
         {
             entity.HasKey(i => i.Id);
-
-            entity.Property(i => i.Name)
-                  .IsRequired()
-                  .HasMaxLength(200);
-
-            entity.Property(i => i.Quantity)
-                  .HasColumnType("decimal(10,2)");
-
-            entity.Property(i => i.Unit)
-                  .HasMaxLength(50);
+            entity.Property(i => i.Name).IsRequired().HasMaxLength(200);
+            entity.Property(i => i.Quantity).HasColumnType("decimal(10,2)");
+            entity.Property(i => i.Unit).HasMaxLength(50);
         });
 
         builder.Entity<Step>(entity =>
         {
             entity.HasKey(s => s.Id);
-
-            entity.Property(s => s.Instruction)
-                  .IsRequired();
+            entity.Property(s => s.Instruction).IsRequired();
         });
 
         builder.Entity<Tag>(entity =>
         {
             entity.HasKey(t => t.Id);
+            entity.Property(t => t.Name).IsRequired().HasMaxLength(100);
+            entity.HasIndex(t => t.Name).IsUnique();
+        });
 
-            entity.Property(t => t.Name)
-                  .IsRequired()
-                  .HasMaxLength(100);
+        builder.Entity<PantryItem>(entity =>
+        {
+            entity.HasKey(p => p.Id);
+            entity.Property(p => p.Name).IsRequired().HasMaxLength(200);
+            entity.Property(p => p.Quantity).HasColumnType("decimal(10,2)");
+            entity.Property(p => p.Unit).HasMaxLength(50);
 
-            entity.HasIndex(t => t.Name)
-                  .IsUnique();
+            entity.HasOne(p => p.User)
+                  .WithMany(u => u.PantryItems)
+                  .HasForeignKey(p => p.UserId)
+                  .OnDelete(DeleteBehavior.Cascade);
         });
 
         SeedTags(builder);

@@ -56,3 +56,9 @@ a:hover { text-decoration: underline; }
   font-size: 12px !important;
   font-weight: 500 !important;
 }
+
+.mat-mdc-select-panel {
+  background: #fff !important;
+  border-radius: var(--radius-sm) !important;
+  box-shadow: var(--shadow-md) !important;
+}

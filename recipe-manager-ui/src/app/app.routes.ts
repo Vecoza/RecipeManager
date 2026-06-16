@@ -31,5 +31,10 @@ export const routes: Routes = [
     canActivate: [authGuard],
     loadComponent: () => import('./features/recipes/recipe-form/recipe-form.component').then(m => m.RecipeFormComponent)
   },
+  {
+    path: 'pantry',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/pantry/pantry.component').then(m => m.PantryComponent)
+  },
   { path: '**', redirectTo: '/recipes' }
 ];
