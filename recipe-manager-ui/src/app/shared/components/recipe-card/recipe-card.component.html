@@ -1,28 +1,31 @@
-<mat-card class="recipe-card">
-  @if (recipe.imageUrl) {
-    <img mat-card-image [src]="recipe.imageUrl" [alt]="recipe.title" />
-  }
-  <mat-card-header>
-    <mat-card-title>{{ recipe.title }}</mat-card-title>
-    <mat-card-subtitle>
-      {{ recipe.prepTimeMinutes + recipe.cookTimeMinutes }}m total · {{ recipe.servings }} servings
-    </mat-card-subtitle>
-  </mat-card-header>
-  <mat-card-content>
-    @if (recipe.description) {
-      <p class="description">{{ recipe.description }}</p>
-    }
-    <div class="tag-chips">
-      @for (tag of recipe.tags; track tag.id) {
-        <mat-chip>{{ tag.name }}</mat-chip>
+<div class="card">
+  <div class="card-header">
+    <div class="card-meta">
+      @for (tag of recipe.tags.slice(0, 2); track tag.id) {
+        <span class="tag">{{ tag.name }}</span>
+      }
+      @if (recipe.tags.length > 2) {
+        <span class="tag tag-more">+{{ recipe.tags.length - 2 }}</span>
       }
     </div>
-  </mat-card-content>
-  <mat-card-actions>
-    <a mat-button color="primary" [routerLink]="['/recipes', recipe.id]">View</a>
-    <a mat-button [routerLink]="['/recipes', recipe.id, 'edit']">Edit</a>
-    <button mat-icon-button color="warn" (click)="onDelete()">
-      <mat-icon>delete</mat-icon>
+    <button class="delete-btn" (click)="onDelete()">
+      <mat-icon>delete_outline</mat-icon>
     </button>
-  </mat-card-actions>
-</mat-card>
+  </div>
+
+  <a class="card-body" [routerLink]="['/recipes', recipe.id]">
+    <h3 class="card-title">{{ recipe.title }}</h3>
+    @if (recipe.description) {
+      <p class="card-desc">{{ recipe.description }}</p>
+    }
+  </a>
+
+  <div class="card-footer">
+    <span class="stat">{{ totalTime }}m</span>
+    <span class="stat-sep">·</span>
+    <span class="stat">{{ recipe.servings }} servings</span>
+    <a class="edit-btn" [routerLink]="['/recipes', recipe.id, 'edit']">
+      <mat-icon>edit</mat-icon>
+    </a>
+  </div>
+</div>

@@ -1,4 +1,0 @@
-.recipe-card { height: 100%; display: flex; flex-direction: column; }
-.description { color: #666; font-size: 14px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-.tag-chips { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
-mat-chip { font-size: 12px; }

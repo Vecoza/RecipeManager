@@ -1,108 +1,136 @@
-<mat-toolbar color="primary">
-  <button mat-icon-button routerLink="/recipes"><mat-icon>arrow_back</mat-icon></button>
-  <span>{{ isEdit ? 'Edit Recipe' : 'New Recipe' }}</span>
-</mat-toolbar>
+<div class="page">
+  <div class="page-header">
+    <a class="back-btn" routerLink="/recipes">
+      <mat-icon>arrow_back</mat-icon>
+      All Recipes
+    </a>
+    <h1>{{ isEdit ? 'Edit Recipe' : 'New Recipe' }}</h1>
+  </div>
 
-<div class="container">
   @if (loading()) {
-    <div class="spinner-wrap"><mat-spinner /></div>
+    <div class="spinner-wrap"><mat-spinner diameter="40" /></div>
   } @else {
     <form [formGroup]="form" (ngSubmit)="submit()">
+      <div class="form-layout">
+        <div class="form-main">
 
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Title</mat-label>
-        <input matInput formControlName="title" />
-        @if (form.get('title')?.hasError('required')) {
-          <mat-error>Title is required</mat-error>
-        }
-      </mat-form-field>
+          <div class="form-section">
+            <h2>Details</h2>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Recipe title</mat-label>
+              <input matInput formControlName="title" />
+              @if (form.get('title')?.hasError('required')) {
+                <mat-error>Title is required</mat-error>
+              }
+            </mat-form-field>
 
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Description</mat-label>
-        <textarea matInput formControlName="description" rows="3"></textarea>
-      </mat-form-field>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Description (optional)</mat-label>
+              <textarea matInput formControlName="description" rows="3"></textarea>
+            </mat-form-field>
 
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Image URL</mat-label>
-        <input matInput formControlName="imageUrl" />
-      </mat-form-field>
+            <div class="row-fields">
+              <mat-form-field appearance="outline">
+                <mat-label>Prep time (min)</mat-label>
+                <input matInput formControlName="prepTimeMinutes" type="number" min="0" />
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Cook time (min)</mat-label>
+                <input matInput formControlName="cookTimeMinutes" type="number" min="0" />
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Servings</mat-label>
+                <input matInput formControlName="servings" type="number" min="1" />
+              </mat-form-field>
+            </div>
 
-      <div class="row-fields">
-        <mat-form-field appearance="outline">
-          <mat-label>Prep time (min)</mat-label>
-          <input matInput formControlName="prepTimeMinutes" type="number" min="0" />
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Cook time (min)</mat-label>
-          <input matInput formControlName="cookTimeMinutes" type="number" min="0" />
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Servings</mat-label>
-          <input matInput formControlName="servings" type="number" min="1" />
-        </mat-form-field>
-      </div>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Tags</mat-label>
+              <mat-select formControlName="tagIds" multiple>
+                @for (tag of availableTags(); track tag.id) {
+                  <mat-option [value]="tag.id">{{ tag.name }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
 
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Tags</mat-label>
-        <mat-select formControlName="tagIds" multiple>
-          @for (tag of availableTags(); track tag.id) {
-            <mat-option [value]="tag.id">{{ tag.name }}</mat-option>
+          <div class="form-section">
+            <div class="section-header">
+              <h2>Ingredients</h2>
+              <button type="button" class="add-btn" (click)="addIngredient()">
+                <mat-icon>add</mat-icon> Add
+              </button>
+            </div>
+
+            @if (ingredients.length === 0) {
+              <p class="empty-hint">No ingredients yet. Click Add to start.</p>
+            }
+
+            <div formArrayName="ingredients" class="array-list">
+              @for (ing of ingredients.controls; track $index) {
+                <div class="array-row" [formGroupName]="$index">
+                  <span class="row-index">{{ $index + 1 }}</span>
+                  <mat-form-field appearance="outline" class="flex-3">
+                    <mat-label>Name</mat-label>
+                    <input matInput formControlName="name" />
+                  </mat-form-field>
+                  <mat-form-field appearance="outline" class="flex-1">
+                    <mat-label>Qty</mat-label>
+                    <input matInput formControlName="quantity" type="number" min="0" />
+                  </mat-form-field>
+                  <mat-form-field appearance="outline" class="flex-1">
+                    <mat-label>Unit</mat-label>
+                    <input matInput formControlName="unit" />
+                  </mat-form-field>
+                  <button type="button" class="remove-btn" (click)="removeIngredient($index)">
+                    <mat-icon>delete_outline</mat-icon>
+                  </button>
+                </div>
+              }
+            </div>
+          </div>
+
+          <div class="form-section">
+            <div class="section-header">
+              <h2>Steps</h2>
+              <button type="button" class="add-btn" (click)="addStep()">
+                <mat-icon>add</mat-icon> Add
+              </button>
+            </div>
+
+            @if (steps.length === 0) {
+              <p class="empty-hint">No steps yet. Click Add to start.</p>
+            }
+
+            <div formArrayName="steps" class="array-list">
+              @for (step of steps.controls; track $index) {
+                <div class="array-row" [formGroupName]="$index">
+                  <span class="step-bubble">{{ $index + 1 }}</span>
+                  <mat-form-field appearance="outline" class="flex-3">
+                    <mat-label>Instruction</mat-label>
+                    <textarea matInput formControlName="instruction" rows="2"></textarea>
+                  </mat-form-field>
+                  <button type="button" class="remove-btn" (click)="removeStep($index)">
+                    <mat-icon>delete_outline</mat-icon>
+                  </button>
+                </div>
+              }
+            </div>
+          </div>
+
+          @if (error()) {
+            <div class="error-banner">{{ error() }}</div>
           }
-        </mat-select>
-      </mat-form-field>
 
-      <h3>Ingredients</h3>
-      <div formArrayName="ingredients">
-        @for (ing of ingredients.controls; track $index) {
-          <div [formGroupName]="$index" class="array-row">
-            <mat-form-field appearance="outline" class="flex-3">
-              <mat-label>Name</mat-label>
-              <input matInput formControlName="name" />
-            </mat-form-field>
-            <mat-form-field appearance="outline" class="flex-1">
-              <mat-label>Qty</mat-label>
-              <input matInput formControlName="quantity" type="number" min="0" />
-            </mat-form-field>
-            <mat-form-field appearance="outline" class="flex-1">
-              <mat-label>Unit</mat-label>
-              <input matInput formControlName="unit" />
-            </mat-form-field>
-            <button mat-icon-button type="button" color="warn" (click)="removeIngredient($index)">
-              <mat-icon>delete</mat-icon>
+          <div class="form-actions">
+            <a class="cancel-btn" routerLink="/recipes">Cancel</a>
+            <button type="submit" class="save-btn" [disabled]="form.invalid || saving()">
+              {{ saving() ? 'Saving…' : (isEdit ? 'Update Recipe' : 'Create Recipe') }}
             </button>
           </div>
-        }
+
+        </div>
       </div>
-      <button mat-stroked-button type="button" (click)="addIngredient()">+ Add Ingredient</button>
-
-      <h3>Steps</h3>
-      <div formArrayName="steps">
-        @for (step of steps.controls; track $index) {
-          <div [formGroupName]="$index" class="array-row">
-            <span class="step-num">{{ $index + 1 }}.</span>
-            <mat-form-field appearance="outline" class="flex-3">
-              <mat-label>Instruction</mat-label>
-              <textarea matInput formControlName="instruction" rows="2"></textarea>
-            </mat-form-field>
-            <button mat-icon-button type="button" color="warn" (click)="removeStep($index)">
-              <mat-icon>delete</mat-icon>
-            </button>
-          </div>
-        }
-      </div>
-      <button mat-stroked-button type="button" (click)="addStep()">+ Add Step</button>
-
-      @if (error()) {
-        <p class="error-msg">{{ error() }}</p>
-      }
-
-      <div class="form-actions">
-        <a mat-button routerLink="/recipes">Cancel</a>
-        <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid || saving()">
-          {{ saving() ? 'Saving…' : (isEdit ? 'Update Recipe' : 'Create Recipe') }}
-        </button>
-      </div>
-
     </form>
   }
 </div>

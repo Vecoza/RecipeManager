@@ -2,10 +2,7 @@ import { Component, OnInit, signal, computed } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatChipsModule } from '@angular/material/chips';
-import { MatDividerModule } from '@angular/material/divider';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatToolbarModule } from '@angular/material/toolbar';
 import { RecipeService } from '../../../core/services/recipe.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { RecipeDetail } from '../../../shared/models/recipe.models';
@@ -13,12 +10,9 @@ import { RecipeDetail } from '../../../shared/models/recipe.models';
 @Component({
   selector: 'app-recipe-detail',
   standalone: true,
-  imports: [
-    RouterLink, MatButtonModule, MatIconModule, MatChipsModule,
-    MatDividerModule, MatProgressSpinnerModule, MatToolbarModule
-  ],
+  imports: [RouterLink, MatButtonModule, MatIconModule, MatProgressSpinnerModule],
   templateUrl: './recipe-detail.component.html',
-  styleUrl: './recipe-detail.component.css'
+  styleUrl: './recipe-detail.component.scss'
 })
 export class RecipeDetailComponent implements OnInit {
   recipe = signal<RecipeDetail | null>(null);
@@ -50,11 +44,7 @@ export class RecipeDetailComponent implements OnInit {
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id')!;
     this.recipeService.getById(id).subscribe({
-      next: r => {
-        this.recipe.set(r);
-        this.scaledServings.set(r.servings);
-        this.loading.set(false);
-      },
+      next: r => { this.recipe.set(r); this.scaledServings.set(r.servings); this.loading.set(false); },
       error: () => { this.loading.set(false); this.router.navigate(['/recipes']); }
     });
   }

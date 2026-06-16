@@ -1,13 +1,20 @@
-<div class="auth-container">
-  <mat-card class="auth-card">
-    <mat-card-header>
-      <mat-card-title>Create Account</mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
+<div class="auth-page">
+  <div class="auth-left">
+    <div class="brand">
+      <h1>Recipe<br>Manager</h1>
+      <p>Start building your collection today.</p>
+    </div>
+  </div>
+
+  <div class="auth-right">
+    <div class="auth-form">
+      <h2>Create account</h2>
+      <p class="auth-sub">Free, forever</p>
+
       <form [formGroup]="form" (ngSubmit)="submit()">
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Email</mat-label>
-          <input matInput formControlName="email" type="email" />
+          <input matInput formControlName="email" type="email" autocomplete="email" />
           @if (form.get('email')?.hasError('required')) {
             <mat-error>Email is required</mat-error>
           }
@@ -15,23 +22,31 @@
             <mat-error>Enter a valid email</mat-error>
           }
         </mat-form-field>
+
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Password</mat-label>
-          <input matInput formControlName="password" type="password" />
+          <input matInput formControlName="password" [type]="hidePassword ? 'password' : 'text'" autocomplete="new-password" />
+          <button mat-icon-button matSuffix type="button" (click)="hidePassword = !hidePassword">
+            <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          @if (form.get('password')?.hasError('required')) {
+            <mat-error>Password is required</mat-error>
+          }
           @if (form.get('password')?.hasError('minlength')) {
             <mat-error>Minimum 6 characters</mat-error>
           }
         </mat-form-field>
+
         @if (error) {
-          <p class="error-msg">{{ error }}</p>
+          <div class="error-banner">{{ error }}</div>
         }
-        <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid || loading" class="full-width">
-          {{ loading ? 'Creating account…' : 'Register' }}
+
+        <button mat-raised-button class="submit-btn" type="submit" [disabled]="form.invalid || loading">
+          {{ loading ? 'Creating account…' : 'Create Account' }}
         </button>
       </form>
-    </mat-card-content>
-    <mat-card-actions>
-      <p>Already have an account? <a routerLink="/login">Sign in</a></p>
-    </mat-card-actions>
-  </mat-card>
+
+      <p class="auth-footer">Already have an account? <a routerLink="/login">Sign in</a></p>
+    </div>
+  </div>
 </div>

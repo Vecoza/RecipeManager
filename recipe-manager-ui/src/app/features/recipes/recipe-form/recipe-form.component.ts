@@ -1,12 +1,10 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatChipsModule } from '@angular/material/chips';
 import { MatSelectModule } from '@angular/material/select';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { RecipeService } from '../../../core/services/recipe.service';
@@ -16,13 +14,9 @@ import { TagDto } from '../../../shared/models/recipe.models';
 @Component({
   selector: 'app-recipe-form',
   standalone: true,
-  imports: [
-    RouterLink, ReactiveFormsModule,
-    MatToolbarModule, MatFormFieldModule, MatInputModule, MatButtonModule,
-    MatIconModule, MatChipsModule, MatSelectModule, MatProgressSpinnerModule
-  ],
+  imports: [RouterLink, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule, MatSelectModule, MatProgressSpinnerModule],
   templateUrl: './recipe-form.component.html',
-  styleUrl: './recipe-form.component.css'
+  styleUrl: './recipe-form.component.scss'
 })
 export class RecipeFormComponent implements OnInit {
   form!: FormGroup;
@@ -44,7 +38,6 @@ export class RecipeFormComponent implements OnInit {
   ngOnInit() {
     this.buildForm();
     this.tagService.getAll().subscribe(tags => this.availableTags.set(tags));
-
     this.recipeId = this.route.snapshot.paramMap.get('id') ?? undefined;
     this.isEdit = !!this.recipeId;
 
@@ -58,13 +51,9 @@ export class RecipeFormComponent implements OnInit {
             servings: r.servings, tagIds: r.tags.map(t => t.id)
           });
           r.ingredients.forEach(i => this.ingredients.push(this.fb.group({
-            name: [i.name, Validators.required],
-            quantity: [i.quantity, Validators.required],
-            unit: [i.unit]
+            name: [i.name, Validators.required], quantity: [i.quantity, Validators.required], unit: [i.unit]
           })));
-          r.steps.forEach(s => this.steps.push(this.fb.group({
-            instruction: [s.instruction, Validators.required]
-          })));
+          r.steps.forEach(s => this.steps.push(this.fb.group({ instruction: [s.instruction, Validators.required] })));
           this.loading.set(false);
         },
         error: () => this.router.navigate(['/recipes'])
@@ -76,17 +65,11 @@ export class RecipeFormComponent implements OnInit {
   get steps() { return this.form.get('steps') as FormArray; }
 
   addIngredient() {
-    this.ingredients.push(this.fb.group({
-      name: ['', Validators.required], quantity: [1, Validators.required], unit: ['']
-    }));
+    this.ingredients.push(this.fb.group({ name: ['', Validators.required], quantity: [1, Validators.required], unit: [''] }));
   }
 
   removeIngredient(i: number) { this.ingredients.removeAt(i); }
-
-  addStep() {
-    this.steps.push(this.fb.group({ instruction: ['', Validators.required] }));
-  }
-
+  addStep() { this.steps.push(this.fb.group({ instruction: ['', Validators.required] })); }
   removeStep(i: number) { this.steps.removeAt(i); }
 
   submit() {
@@ -94,10 +77,7 @@ export class RecipeFormComponent implements OnInit {
     this.saving.set(true);
     this.error.set('');
     const dto = this.form.value;
-    const request = this.isEdit
-      ? this.recipeService.update(this.recipeId!, dto)
-      : this.recipeService.create(dto);
-
+    const request = this.isEdit ? this.recipeService.update(this.recipeId!, dto) : this.recipeService.create(dto);
     request.subscribe({
       next: r => this.router.navigate(['/recipes', r.id]),
       error: err => { this.error.set(err.error?.message ?? 'Save failed'); this.saving.set(false); }

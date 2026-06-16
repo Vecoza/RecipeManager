@@ -1,48 +1,58 @@
-// Include theming for Angular Material with `mat.theme()`.
-// This Sass mixin will define CSS variables that are used for styling Angular Material
-// components according to the Material 3 design spec.
-// Learn more about theming and how to use it for your application's
-// custom components at https://material.angular.dev/guide/theming
 @use '@angular/material' as mat;
 
-html {
+:root {
+  --radius: 16px;
+  --radius-sm: 10px;
+  --radius-lg: 24px;
+
+  --surface: #ffffff;
+  --surface-dim: #f5f5f7;
+  --border: #e8e8ed;
+
+  --primary: #1a1a2e;
+  --primary-light: #f0f0f5;
+  --primary-dark: #0d0d1a;
+
+  --accent: #e63946;
+  --accent-light: #fef2f3;
+
+  --danger: #ef4444;
+  --danger-light: #fef2f2;
+
+  --text-primary: #0f0f10;
+  --text-secondary: #6b7280;
+  --text-muted: #9ca3af;
+
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+  --shadow-md: 0 4px 16px rgba(0,0,0,.08);
+  --shadow-lg: 0 12px 40px rgba(0,0,0,.12);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
   height: 100%;
-  @include mat.theme(
-    (
-      color: (
-        primary: mat.$azure-palette,
-        tertiary: mat.$blue-palette,
-      ),
-      typography: Roboto,
-      density: 0,
-    )
-  );
+  font-family: 'Inter', 'Roboto', system-ui, sans-serif;
+  background: var(--surface-dim);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
 }
 
-body {
-  // Default the application to a light color theme. This can be changed to
-  // `dark` to enable the dark color theme, or to `light dark` to defer to the
-  // user's system settings.
-  color-scheme: light;
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
 
-  // Set a default background, font and text colors for the application using
-  // Angular Material's system-level CSS variables. Learn more about these
-  // variables at https://material.angular.dev/guide/system-variables
-  background-color: var(--mat-sys-surface);
-  color: var(--mat-sys-on-surface);
-  font: var(--mat-sys-body-medium);
-
-  // Reset the user agent margin.
-  margin: 0;
-  height: 100%;
-}
-/* Global styles — theme and Material overrides will be added in Phase 6 */
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+.mat-mdc-form-field {
+  --mdc-outlined-text-field-container-shape: var(--radius-sm);
 }
 
-body {
-  font-family: 'Roboto', sans-serif;
+.mat-mdc-raised-button, .mat-mdc-outlined-button, .mat-mdc-button {
+  border-radius: var(--radius-sm) !important;
+  font-weight: 600 !important;
+  letter-spacing: 0 !important;
+}
+
+.mat-mdc-chip {
+  border-radius: 8px !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
 }

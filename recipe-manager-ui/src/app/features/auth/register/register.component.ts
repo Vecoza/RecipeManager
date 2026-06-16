@@ -4,20 +4,21 @@ import { Router, RouterLink } from '@angular/router';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
+import { MatIconModule } from '@angular/material/icon';
 import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatCardModule, RouterLink],
+  imports: [ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule, RouterLink],
   templateUrl: './register.component.html',
-  styleUrl: './register.component.css'
+  styleUrl: './register.component.scss'
 })
 export class RegisterComponent {
   form: FormGroup;
   error = '';
   loading = false;
+  hidePassword = true;
 
   constructor(private fb: FormBuilder, private auth: AuthService, private router: Router) {
     this.form = this.fb.group({
@@ -32,10 +33,7 @@ export class RegisterComponent {
     this.error = '';
     this.auth.register(this.form.value).subscribe({
       next: () => this.router.navigate(['/recipes']),
-      error: err => {
-        this.error = err.error?.message ?? 'Registration failed';
-        this.loading = false;
-      }
+      error: err => { this.error = err.error?.message ?? 'Registration failed'; this.loading = false; }
     });
   }
 }

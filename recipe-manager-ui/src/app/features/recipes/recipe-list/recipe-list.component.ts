@@ -1,12 +1,8 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatButtonModule } from '@angular/material/button';
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatChipsModule } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
 import { RecipeService } from '../../../core/services/recipe.service';
@@ -18,14 +14,9 @@ import { RecipeCardComponent } from '../../../shared/components/recipe-card/reci
 @Component({
   selector: 'app-recipe-list',
   standalone: true,
-  imports: [
-    RouterLink, FormsModule,
-    MatToolbarModule, MatButtonModule, MatInputModule, MatFormFieldModule,
-    MatChipsModule, MatIconModule, MatProgressSpinnerModule,
-    RecipeCardComponent
-  ],
+  imports: [RouterLink, FormsModule, MatIconModule, MatButtonModule, MatProgressSpinnerModule, RecipeCardComponent],
   templateUrl: './recipe-list.component.html',
-  styleUrl: './recipe-list.component.css'
+  styleUrl: './recipe-list.component.scss'
 })
 export class RecipeListComponent implements OnInit {
   recipes = signal<RecipeListItem[]>([]);
@@ -62,9 +53,7 @@ export class RecipeListComponent implements OnInit {
     this.tagService.getAll().subscribe(tags => this.availableTags.set(tags));
   }
 
-  onSearch(value: string) {
-    this.searchSubject.next(value);
-  }
+  onSearch(value: string) { this.searchSubject.next(value); }
 
   toggleTag(name: string) {
     const current = this.selectedTags();
@@ -73,4 +62,6 @@ export class RecipeListComponent implements OnInit {
     );
     this.loadRecipes();
   }
+
+  isTagSelected(name: string) { return this.selectedTags().includes(name); }
 }
