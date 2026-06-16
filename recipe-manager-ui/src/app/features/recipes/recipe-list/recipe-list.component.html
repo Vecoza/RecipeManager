@@ -1,0 +1,41 @@
+<mat-toolbar color="primary">
+  <span>Recipe Manager</span>
+  <span class="spacer"></span>
+  <span class="user-email">{{ auth.currentEmail() }}</span>
+  <button mat-button (click)="auth.logout()">Logout</button>
+</mat-toolbar>
+
+<div class="container">
+  <div class="actions-bar">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>Search recipes</mat-label>
+      <input matInput [(ngModel)]="searchTerm" (ngModelChange)="onSearch($event)" />
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+    <a mat-raised-button color="primary" routerLink="/recipes/new">+ New Recipe</a>
+  </div>
+
+  <div class="tag-chips">
+    @for (tag of availableTags(); track tag.id) {
+      <mat-chip-option
+        [selected]="selectedTags().includes(tag.name)"
+        (click)="toggleTag(tag.name)">
+        {{ tag.name }}
+      </mat-chip-option>
+    }
+  </div>
+
+  @if (loading()) {
+    <div class="spinner-wrap"><mat-spinner /></div>
+  } @else if (recipes().length === 0) {
+    <div class="empty-state">
+      <p>No recipes found. <a routerLink="/recipes/new">Create your first one!</a></p>
+    </div>
+  } @else {
+    <div class="recipe-grid">
+      @for (recipe of recipes(); track recipe.id) {
+        <app-recipe-card [recipe]="recipe" (deleted)="loadRecipes()" />
+      }
+    </div>
+  }
+</div>

@@ -1,0 +1,9 @@
+.spacer { flex: 1; }
+.user-email { font-size: 14px; margin-right: 12px; opacity: 0.85; }
+.container { max-width: 1200px; margin: 24px auto; padding: 0 16px; }
+.actions-bar { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; }
+.search-field { flex: 1; }
+.tag-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+.recipe-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+.spinner-wrap { display: flex; justify-content: center; padding: 48px; }
+.empty-state { text-align: center; padding: 48px; color: #666; }

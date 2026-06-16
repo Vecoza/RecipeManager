@@ -1,0 +1,12 @@
+.container { max-width: 800px; margin: 24px auto; padding: 0 16px; }
+.full-width { width: 100%; display: block; margin-bottom: 12px; }
+.row-fields { display: flex; gap: 16px; margin-bottom: 12px; }
+.row-fields mat-form-field { flex: 1; }
+.array-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.flex-1 { flex: 1; }
+.flex-3 { flex: 3; }
+.step-num { font-weight: bold; min-width: 24px; }
+h3 { margin: 24px 0 12px; }
+.form-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 32px; }
+.error-msg { color: red; margin-top: 12px; }
+.spinner-wrap { display: flex; justify-content: center; padding: 48px; }

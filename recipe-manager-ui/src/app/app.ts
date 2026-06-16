@@ -4,8 +4,7 @@ import { RouterOutlet } from '@angular/router';
 @Component({
   selector: 'app-root',
   imports: [RouterOutlet],
-  template: `<router-outlet />`,
-  styles: []
+  templateUrl: './app.html'
 })
 export class App {
   title = 'recipe-manager-ui';

@@ -1,0 +1,28 @@
+<mat-card class="recipe-card">
+  @if (recipe.imageUrl) {
+    <img mat-card-image [src]="recipe.imageUrl" [alt]="recipe.title" />
+  }
+  <mat-card-header>
+    <mat-card-title>{{ recipe.title }}</mat-card-title>
+    <mat-card-subtitle>
+      {{ recipe.prepTimeMinutes + recipe.cookTimeMinutes }}m total · {{ recipe.servings }} servings
+    </mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content>
+    @if (recipe.description) {
+      <p class="description">{{ recipe.description }}</p>
+    }
+    <div class="tag-chips">
+      @for (tag of recipe.tags; track tag.id) {
+        <mat-chip>{{ tag.name }}</mat-chip>
+      }
+    </div>
+  </mat-card-content>
+  <mat-card-actions>
+    <a mat-button color="primary" [routerLink]="['/recipes', recipe.id]">View</a>
+    <a mat-button [routerLink]="['/recipes', recipe.id, 'edit']">Edit</a>
+    <button mat-icon-button color="warn" (click)="onDelete()">
+      <mat-icon>delete</mat-icon>
+    </button>
+  </mat-card-actions>
+</mat-card>
